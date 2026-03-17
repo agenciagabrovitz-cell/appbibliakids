@@ -1,0 +1,130 @@
+@import url('https://fonts.googleapis.com/css2?family=Bubblegum+Sans&family=Nunito:wght@400;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 45 100% 96%;
+    --foreground: 250 30% 25%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 250 30% 25%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 250 30% 25%;
+
+    --primary: 280 67% 55%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 45 100% 65%;
+    --secondary-foreground: 250 30% 25%;
+
+    --muted: 220 20% 93%;
+    --muted-foreground: 250 15% 50%;
+
+    --accent: 160 60% 45%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 280 30% 85%;
+    --input: 280 30% 85%;
+    --ring: 280 67% 55%;
+
+    --radius: 1rem;
+
+    --kids-orange: 25 95% 58%;
+    --kids-blue: 200 85% 55%;
+    --kids-green: 145 65% 45%;
+    --kids-pink: 340 80% 62%;
+    --kids-yellow: 45 100% 60%;
+    --kids-red: 5 85% 58%;
+    --kids-teal: 175 65% 45%;
+
+    --font-display: 'Bubblegum Sans', cursive;
+    --font-body: 'Nunito', sans-serif;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-body);
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
+  .font-body {
+    font-family: var(--font-body);
+  }
+}
+
+@layer components {
+  .kids-card {
+    @apply bg-card rounded-3xl shadow-lg border-2 border-border p-6 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer;
+  }
+  .kids-btn {
+    @apply rounded-2xl font-bold font-body py-3 px-6 transition-all duration-200 hover:scale-105 active:scale-95 shadow-md;
+  }
+  .kids-badge {
+    @apply inline-flex items-center gap-1 rounded-full px-3 py-1 text-sm font-bold;
+  }
+  .bubble-float {
+    animation: bubbleFloat 3s ease-in-out infinite;
+  }
+  @keyframes bubbleFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  @keyframes confetti {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+  }
+  .animate-confetti {
+    animation: confetti 1s ease-out forwards;
+  }
+  @keyframes bounceIn {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .animate-bounce-in {
+    animation: bounceIn 0.5s ease-out forwards;
+  }
+  @keyframes slideUp {
+    0% { transform: translateY(30px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+  .animate-slide-up {
+    animation: slideUp 0.4s ease-out forwards;
+  }
+  .story-slide-bg {
+    @apply rounded-3xl overflow-hidden;
+    background: linear-gradient(135deg, hsl(var(--kids-blue) / 0.1), hsl(var(--kids-pink) / 0.1));
+  }
+}
+
+body #lovable-badge{
+  display:none !important;
+}
