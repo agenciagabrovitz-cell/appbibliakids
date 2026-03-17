@@ -21,8 +21,11 @@ RETURNS TRIGGER AS $$
 DECLARE
   existing_user_id UUID;
 BEGIN
-  -- Check if a user row already exists for this email (pre-paid)
-  SELECT id INTO existing_user_id FROM public.users WHERE email = NEW.email;
+  -- 1. Check if a user row already exists for this email (pre-paid)
+  -- Use lower() for both sides to be case-insensitive
+  SELECT id INTO existing_user_id 
+  FROM public.users 
+  WHERE lower(email) = lower(NEW.email);
 
   IF existing_user_id IS NOT NULL THEN
     -- Update existing row with the new Auth ID
@@ -31,18 +34,22 @@ BEGIN
         updated_at = now()
     WHERE id = existing_user_id;
   ELSE
-    -- Create new row in public.users
+    -- Create new row in public.users if it doesn't exist
     INSERT INTO public.users (id, email, subscription_status)
-    VALUES (NEW.id, NEW.email, 'none');
+    VALUES (NEW.id, NEW.email, 'none')
+    ON CONFLICT (email) DO UPDATE 
+    SET id = EXCLUDED.id, updated_at = now();
   END IF;
 
-  -- Create profile
+  -- 2. Create profile (safely using ON CONFLICT)
   INSERT INTO public.profiles (user_id, display_name)
-  VALUES (NEW.id, COALESCE(NEW.raw_user_meta_data->>'display_name', NEW.email));
+  VALUES (NEW.id, COALESCE(NEW.raw_user_meta_data->>'display_name', NEW.email))
+  ON CONFLICT (user_id) DO NOTHING;
 
-  -- Create game progress
+  -- 3. Create game progress (safely using ON CONFLICT)
   INSERT INTO public.game_progress (user_id)
-  VALUES (NEW.id);
+  VALUES (NEW.id)
+  ON CONFLICT (user_id) DO NOTHING;
 
   RETURN NEW;
 END;
