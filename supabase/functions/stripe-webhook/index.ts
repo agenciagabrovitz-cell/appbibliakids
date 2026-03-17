@@ -87,22 +87,26 @@ serve(async (req) => {
     }
 
     if (email && newStatus) {
-      console.log(`Attempting to update user with email ${email} to status ${newStatus}`);
+      console.log(`Attempting to upsert user with email ${email} to status ${newStatus}`);
       const { data, error } = await supabaseAdmin
         .from("users")
-        .update({ subscription_status: newStatus })
-        .eq("email", email)
+        .upsert(
+          { 
+            email: email.toLowerCase(), 
+            subscription_status: newStatus,
+            updated_at: new Date().toISOString()
+          },
+          { onConflict: "email" }
+        )
         .select();
 
       if (error) {
-        console.error(`Error updating user ${email}:`, error);
+        console.error(`Error upserting user ${email}:`, error);
         throw error;
       }
       
       if (data && data.length > 0) {
-        console.log(`Successfully updated user ${email} to ${newStatus}`);
-      } else {
-        console.warn(`No user found with email ${email}`);
+        console.log(`Successfully upserted user ${email} to ${newStatus}`);
       }
     }
 
