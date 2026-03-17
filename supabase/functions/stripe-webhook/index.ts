@@ -88,16 +88,35 @@ serve(async (req) => {
 
     if (email && newStatus) {
       console.log(`Attempting to upsert user with email ${email} to status ${newStatus}`);
+      
+      // Try to find the auth user ID by email so the app can query by auth UUID
+      let authUserId: string | null = null;
+      try {
+        const { data: authData } = await supabaseAdmin.auth.admin.listUsers();
+        const authUser = authData?.users?.find(
+          (u) => u.email?.toLowerCase() === email.toLowerCase()
+        );
+        if (authUser) {
+          authUserId = authUser.id;
+          console.log(`Found auth user ID: ${authUserId} for email: ${email}`);
+        }
+      } catch (e) {
+        console.log(`Could not lookup auth user (pre-paid user?): ${e.message}`);
+      }
+
+      // Build upsert data - include auth ID if found
+      const upsertData: Record<string, unknown> = {
+        email: email.toLowerCase(),
+        subscription_status: newStatus,
+        updated_at: new Date().toISOString(),
+      };
+      if (authUserId) {
+        upsertData.id = authUserId;
+      }
+
       const { data, error } = await supabaseAdmin
         .from("users")
-        .upsert(
-          { 
-            email: email.toLowerCase(), 
-            subscription_status: newStatus,
-            updated_at: new Date().toISOString()
-          },
-          { onConflict: "email" }
-        )
+        .upsert(upsertData, { onConflict: "email" })
         .select();
 
       if (error) {
@@ -106,7 +125,7 @@ serve(async (req) => {
       }
       
       if (data && data.length > 0) {
-        console.log(`Successfully upserted user ${email} to ${newStatus}`);
+        console.log(`Successfully upserted user ${email} to ${newStatus}. Record:`, data[0]);
       }
     }
 

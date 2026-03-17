@@ -5,11 +5,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { useUserRole } from "@/hooks/useUserRole";
-import { useSubscription } from "@/hooks/useSubscription";
 import Index from "./pages/Index.tsx";
 import Auth from "./pages/Auth.tsx";
 import NotFound from "./pages/NotFound.tsx";
-import SubscriptionBlocked from "./pages/SubscriptionBlocked.tsx";
 import RoleSelection from "./components/RoleSelection.tsx";
 import ParentDashboard from "./components/ParentDashboard.tsx";
 
@@ -18,9 +16,8 @@ const queryClient = new QueryClient();
 function AppRoutes() {
   const { user, loading: authLoading } = useAuth();
   const { role, loading: roleLoading, refetch } = useUserRole();
-  const { subscriptionStatus, loading: subLoading } = useSubscription();
 
-  if (authLoading || (user && roleLoading) || (user && subLoading)) {
+  if (authLoading || (user && roleLoading)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <p className="text-2xl font-display text-primary animate-pulse">Carregando... ✨</p>
@@ -37,10 +34,9 @@ function AppRoutes() {
     );
   }
 
-  // Check subscription status before allowing any internal app route access
-  const hasValidSubscription = subscriptionStatus === "active" || subscriptionStatus === "trialing";
-  if (!hasValidSubscription) {
-    return <SubscriptionBlocked />;
+  // No role selected yet
+  if (!role) {
+    return <RoleSelection onRoleSelected={refetch} />;
   }
 
   // No role selected yet
