@@ -20,7 +20,7 @@ export default function SubscriptionBlocked() {
         <CardContent className="flex justify-center pt-4">
           <Button 
             className="w-full text-lg h-12 shadow-sm transition-all hover:scale-[1.02]"
-            onClick={() => window.location.href = "https://pvabibliakids.lovable.app/"}
+            onClick={() => window.location.href = "https://www.appkidsbiblia.online/"}
           >
             Assinar agora
           </Button>
